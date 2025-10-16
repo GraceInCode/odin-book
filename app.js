@@ -24,7 +24,6 @@ app.use(methodOverride(function (req, res) {
   }
 }));
 
-
 app.use((req, res, next) => {
   console.log(`Global after override: ${req.method} ${req.originalUrl} (body: ${JSON.stringify(req.body)})`);
   next();
@@ -39,7 +38,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 const flash = require('connect-flash');
 const passport = require('./src/config/passport');
-
 
 // Session middleware
 let store;
@@ -99,13 +97,24 @@ app.get('/', isAuthenticated, (req, res) => {
     res.render('index');
 })
 
-// Global error handler
+// Global error handler - Fixed for server-rendered app
 app.use((err, req, res, next) => {
+  console.error('Error caught by global handler:');
   console.error(err.stack);
-  if (!res.headersSent) { // Check if headers sent
-    res.status(500).json({ error: 'Something went wrong!' });
+  
+  if (!res.headersSent) {
+    // For server-rendered apps, redirect with flash message instead of JSON
+    req.flash('error', 'Something went wrong. Please try again.');
+    
+    // Redirect to appropriate page based on context
+    const referer = req.get('referer');
+    if (referer) {
+      res.redirect(referer);
+    } else {
+      res.redirect('/');
+    }
   } else {
-    next(err); // Pass if already sent
+    next(err); // Pass if headers already sent
   }
 });
 
