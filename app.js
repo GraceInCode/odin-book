@@ -51,7 +51,8 @@ if (process.env.NODE_ENV === 'production') {
 app.use(session({
   store: new pgSession({
     pool: prisma.$pool, // Reuse Prisma connections (perf)
-    tableName: 'Session' // Default
+    tableName: 'Session', // Default,
+    createTableIfMissing: true
   }),
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -100,8 +101,12 @@ app.get('/', isAuthenticated, (req, res) => {
 
 // Global error handler
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong' });
+  console.error(err.stack);
+  if (!res.headersSent) { // Check if headers sent
+    res.status(500).json({ error: 'Something went wrong!' });
+  } else {
+    next(err); // Pass if already sent
+  }
 });
 
 module.exports = app; // Export for tests
