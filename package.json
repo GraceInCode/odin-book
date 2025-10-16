@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "jest --verbose"
+    "test": "jest --verbose",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "node seed.js"
   },
   "keywords": [],
   "author": "",
