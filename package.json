@@ -8,7 +8,8 @@
     "dev": "nodemon app.js",
     "test": "jest --verbose",
     "db:migrate": "prisma migrate deploy",
-    "db:seed": "node seed.js"
+    "db:seed": "node seed.js",
+    "build": "npm install && npx prisma generate"
   },
   "keywords": [],
   "author": "",
