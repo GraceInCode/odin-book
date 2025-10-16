@@ -77,6 +77,11 @@ app.use((req, res, next) => {
     next();
 });
 
+app.use((req, res, next) => {
+  console.log(`==> ${req.method} ${req.path} - Body:`, req.body);
+  next();
+});
+
 // Mount routes
 const authRoutes = require('./src/routes/authRoutes');
 const postRoutes = require('./src/routes/postRoutes');
