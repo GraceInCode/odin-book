@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Feed - Odin-Book</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <h1>Odin-Book</h1>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/posts">Feed</a>
+                <a href="/users">Users</a>
+                <a href="/users/<%= user.id %>">My Profile</a>
+                <a href="/follows/requests">Requests</a>
+                <form method="POST" action="/auth/logout">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Your Feed</h1>
+
+        <% if (error && error.length > 0) { %>
+            <div class="error"><%= error[0] %></div>
+        <% } %>
+        <% if (success && success.length > 0) { %>
+            <div class="success"><%= success[0] %></div>
+        <% } %>
+
+        <% if (posts.length === 0) { %>
+            <div class="empty-state">
+                <p>No posts to show. Follow some users to see their posts!</p>
+            </div>
+        <% } %>
+
+        <% posts.forEach(post => { %>
+            <div class="post">
+                <div class="post-header">
+                    <% if (post.user.profilePicture) { %>
+                        <img src="<%= post.user.profilePicture %>" alt="<%= post.user.username %>'s profile" class="profile-pic" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div class="profile-pic" style="display: none;"><%= post.user.username.charAt(0).toUpperCase() %></div>
+                    <% } else { %>
+                        <div class="profile-pic"><%= post.user.username.charAt(0).toUpperCase() %></div>
+                    <% } %>
+                    <a href="/users/<%= post.user.id %>"><%= post.user.username %></a>
+                </div>
+
+                <div class="post-content">
+                    <%= post.content %>
+                </div>
+
+                <% if (post.imageUrl) { %>
+                    <img src="<%= post.imageUrl %>" alt="Post image" class="post-image">
+                <% } %>
+
+                <div class="post-stats">
+                    <span><%= post.likes.length %> likes</span>
+                    <span><%= post.comments.length %> comments</span>
+                </div>
+
+                <div class="post-actions">
+                    <% const isLiked = post.likes.some(like => like.userId === user.id); %>
+                    <% if (isLiked) { %>
+                        <form action="/likes/<%= post.id %>" method="POST">
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn-secondary">Unlike</button>
+                        </form>
+                    <% } else { %>
+                        <form action="/likes" method="POST">
+                            <input type="hidden" name="postId" value="<%= post.id %>">
+                            <button type="submit">Like</button>
+                        </form>
+                    <% } %>
+                    <a href="/posts/<%= post.id %>" class="view-post-link">View Post</a>
+                </div>
+
+                <% if (post.comments.length > 0) { %>
+                    <div class="comments">
+                        <h3>Comments</h3>
+                        <ul>
+                            <% post.comments.slice(0, 3).forEach(comment => { %>
+                                <li class="comment">
+                                    <span class="comment-author"><%= comment.user?.username || 'Unknown' %>:</span>
+                                    <%= comment.content %>
+                                </li>
+                            <% }); %>
+                        </ul>
+                        <% if (post.comments.length > 3) { %>
+                            <a href="/posts/<%= post.id %>">View all <%= post.comments.length %> comments</a>
+                        <% } %>
+                    </div>
+                <% } %>
+            </div>
+        <% }); %>
+    </div>
+</body>
+</html>

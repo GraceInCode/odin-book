@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Follow Requests - Odin-Book</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <h1>Odin-Book</h1>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/posts">Feed</a>
+                <a href="/users">Users</a>
+                <a href="/users/<%= user.id %>">My Profile</a>
+                <a href="/follows/requests">Requests</a>
+                <form method="POST" action="/auth/logout">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>Pending Follow Requests</h1>
+
+        <% if (requests.length === 0) { %>
+            <div class="empty-state">
+                <p>No pending follow requests</p>
+            </div>
+        <% } else { %>
+            <ul class="request-list">
+                <% requests.forEach(req => { %>
+                    <li class="request-item">
+                        <span class="request-username">
+                            <a href="/users/<%= req.follower.id %>"><%= req.follower.username %></a>
+                        </span>
+                        <div class="request-actions">
+                            <form action="/follows/<%= req.follower.id %>" method="POST">
+                                <input type="hidden" name="_method" value="PUT">
+                                <input type="hidden" name="status" value="ACCEPTED">
+                                <button type="submit" class="btn-success">Accept</button>
+                            </form>
+                            <form action="/follows/<%= req.follower.id %>" method="POST">
+                                <input type="hidden" name="_method" value="PUT">
+                                <input type="hidden" name="status" value="REJECTED">
+                                <button type="submit" class="btn-danger">Reject</button>
+                            </form>
+                        </div>
+                    </li>
+                <% }); %>
+            </ul>
+        <% } %>
+    </div>
+</body>
+</html>

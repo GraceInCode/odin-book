@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Edit Profile - Odin-Book</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <h1>Odin-Book</h1>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/posts">Feed</a>
+                <a href="/users">Users</a>
+                <a href="/users/<%= user.id %>">My Profile</a>
+                <a href="/follows/requests">Requests</a>
+                <form method="POST" action="/auth/logout">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="profile-section">
+            <h1>Edit Profile</h1>
+
+            <% if (error && error.length > 0) { %>
+                <div class="error"><%= error[0] %></div>
+            <% } %>
+            <% if (success && success.length > 0) { %>
+                <div class="success"><%= success[0] %></div>
+            <% } %>
+
+            <form method="POST" action="/users/<%= user.id %>?_method=PUT" enctype="multipart/form-data">
+                <input type="hidden" name="_method" value="PUT">
+                
+                <label for="bio" style="display: block; margin-bottom: 5px; font-weight: 600; color: #1c1e21;">Bio</label>
+                <textarea id="bio" name="bio" placeholder="Tell us about yourself..."><%= user.bio || '' %></textarea>
+                
+                <label for="profilePicture" style="display: block; margin-bottom: 5px; font-weight: 600; color: #1c1e21;">Profile Picture</label>
+                <div class="file-input-wrapper">
+                    <input type="file" id="profilePicture" name="profilePicture" accept="image/*">
+                    <label for="profilePicture" class="file-input-label">
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                        Choose Photo
+                    </label>
+                    <span class="file-name" id="profile-file-name"></span>
+                </div>
+
+                <% if (user.profilePicture) { %>
+                    <div style="margin-bottom: 15px;">
+                        <p style="font-size: 14px; color: #65676b; margin-bottom: 8px;">Current profile picture:</p>
+                        <img src="<%= user.profilePicture %>" alt="Current profile" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 2px solid #e4e6eb;">
+                    </div>
+                <% } %>
+                
+                <button type="submit">Update Profile</button>
+                <a href="/users/<%= user.id %>" style="margin-left: 10px;">Cancel</a>
+            </form>
+
+            <script>
+                document.getElementById('profilePicture').addEventListener('change', function(e) {
+                    const fileName = e.target.files[0]?.name || '';
+                    document.getElementById('profile-file-name').textContent = fileName;
+                });
+            </script>
+        </div>
+    </div>
+</body>
+</html>

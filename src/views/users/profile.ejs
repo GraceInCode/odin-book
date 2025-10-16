@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= user.username %>'s Profile - Odin-Book</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <h1>Odin-Book</h1>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/posts">Feed</a>
+                <a href="/users">Users</a>
+                <a href="/follows/requests">Requests</a>
+                <form method="POST" action="/auth/logout">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="profile-header">
+            <% if (user.profilePicture) { %>
+                <img src="<%= user.profilePicture %>" alt="Profile Picture" class="profile-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="profile-pic-header" style="display: none; margin: 0 auto 15px;"><%= user.username.charAt(0).toUpperCase() %></div>
+            <% } else { %>
+                <div class="profile-pic-header" style="margin: 0 auto 15px;"><%= user.username.charAt(0).toUpperCase() %></div>
+            <% } %>
+            <h1><%= user.username %></h1>
+            <p class="profile-bio"><%= user.bio || 'No bio yet' %></p>
+            <% if (isOwnProfile) { %>
+                <div style="margin-top: 15px;">
+                    <a href="/users/<%= user.id %>/edit" style="display: inline-block; padding: 10px 20px; background: white; color: #1877f2; border-radius: 6px; text-decoration: none; font-weight: 600; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Edit Profile</a>
+                </div>
+            <% } %>
+        </div>
+
+        <div class="profile-section">
+            <h2>Posts (<%= user.posts.length %>)</h2>
+            <% if (user.posts.length === 0) { %>
+                <p class="empty-state">No posts yet</p>
+            <% } else { %>
+                <% user.posts.forEach(post => { %>
+                    <div class="post" style="margin-bottom: 15px;">
+                        <div class="post-content">
+                            <%= post.content %>
+                        </div>
+
+                        <% if (post.imageUrl) { %>
+                            <img src="<%= post.imageUrl %>" alt="Post image" class="post-image">
+                        <% } %>
+
+                        <div class="post-stats">
+                            <span><%= post.likes.length %> likes</span>
+                            <span><%= post.comments.length %> comments</span>
+                        </div>
+
+                        <% if (post.comments.length > 0) { %>
+                            <div class="comments" style="margin-top: 10px; padding-top: 10px;">
+                                <h3 style="margin: 0 0 8px 0;">Recent Comments</h3>
+                                <ul>
+                                    <% post.comments.slice(0, 2).forEach(comment => { %>
+                                        <li class="comment"><%= comment.content %></li>
+                                    <% }); %>
+                                </ul>
+                            </div>
+                        <% } %>
+
+                        <a href="/posts/<%= post.id %>" class="view-post-link">View Post</a>
+                    </div>
+                <% }); %>
+            <% } %>
+        </div>
+
+        <div class="profile-section">
+            <h2>Followers (<%= user.followers.length %>)</h2>
+            <% if (user.followers.length === 0) { %>
+                <p class="empty-state">No followers yet</p>
+            <% } else { %>
+                <ul class="followers-list">
+                    <% user.followers.forEach(follower => { %>
+                        <li>
+                            <a href="/users/<%= follower.id %>"><%= follower.username %></a>
+                        </li>
+                    <% }); %>
+                </ul>
+            <% } %>
+        </div>
+    </div>
+</body>
+</html>

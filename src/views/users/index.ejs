@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Users - Odin-Book</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="nav-content">
+            <h1>Odin-Book</h1>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/posts">Feed</a>
+                <a href="/users">Users</a>
+                <a href="/users/<%= currentUserId %>">My Profile</a>
+                <a href="/follows/requests">Requests</a>
+                <form method="POST" action="/auth/logout">
+                    <button type="submit">Logout</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1>All Users</h1>
+
+        <% if (error && error.length > 0) { %>
+            <div class="error"><%= error[0] %></div>
+        <% } %>
+
+        <ul class="user-list">
+            <% users.forEach(user => { %>
+                <li class="user-item">
+                    <div class="user-info">
+                        <% if (user.profilePicture) { %>
+                            <img src="<%= user.profilePicture %>" alt="<%= user.username %>'s profile" class="profile-pic-large" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                            <div class="profile-pic-large" style="display: none;"><%= user.username.charAt(0).toUpperCase() %></div>
+                        <% } else { %>
+                            <div class="profile-pic-large"><%= user.username.charAt(0).toUpperCase() %></div>
+                        <% } %>
+                        <a href="/users/<%= user.id %>"><%= user.username %></a>
+                    </div>
+
+                    <% if (user.id !== currentUserId) { %>
+                        <div class="user-actions">
+                            <% const status = followMap.get(user.id); %>
+                            <% if (!status) { %>
+                                <form action="/follows" method="POST">
+                                    <input type="hidden" name="followedId" value="<%= user.id %>">
+                                    <button type="submit">Follow</button>
+                                </form>
+                            <% } else if (status === 'PENDING') { %>
+                                <button disabled>Pending</button>
+                            <% } else if (status === 'ACCEPTED') { %>
+                                <form action="/follows/<%= user.id %>" method="POST">
+                                    <input type="hidden" name="_method" value="DELETE">
+                                    <button type="submit" class="btn-secondary">Unfollow</button>
+                                </form>
+                            <% } %>
+                        </div>
+                    <% } %>
+                </li>
+            <% }); %>
+        </ul>
+    </div>
+</body>
+</html>

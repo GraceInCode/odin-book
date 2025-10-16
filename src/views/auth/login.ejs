@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Odin-Book</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <h1>Login to Odin-Book</h1>
+
+        <% if (error && error.length > 0) { %>
+            <div class="error"><%= error[0] %></div>
+        <% } %>
+
+        <form method="POST" action="/auth/login">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+        </form>
+
+        <form method="POST" action="/auth/guest">
+            <button type="submit" class="btn-secondary">Guest Login</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 20px; color: #65676b;">
+            Don't have an account? <a href="/auth/register">Register</a>
+        </p>
+    </div>
+</body>
+</html>
