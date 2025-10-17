@@ -39,17 +39,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 const flash = require('connect-flash');
 const passport = require('./src/config/passport');
 
-// Session middleware
-let store;
-if (process.env.NODE_ENV === 'production') {
-  store = new pgSession({
-    pool: prisma.$pool
-  });
-}
+// Session middleware - Fixed for Prisma
+const { Pool } = require('pg');
+
+// Create a separate connection pool for sessions
+const sessionPool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
+
 app.use(session({
   store: new pgSession({
-    pool: prisma.$pool, // Reuse Prisma connections (perf)
-    tableName: 'Session', // Default,
+    pool: sessionPool,
+    tableName: 'session', // Lowercase to match PostgreSQL convention
     createTableIfMissing: true
   }),
   secret: process.env.SESSION_SECRET,
@@ -58,7 +59,7 @@ app.use(session({
   cookie: {
     maxAge: 1000 * 60 * 60 * 24, // 1 day
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production' // HTTPS only
+    secure: process.env.NODE_ENV === 'production' // HTTPS only in production
   }
 }));
 
@@ -75,11 +76,6 @@ app.use((req, res, next) => {
     res.locals.success = req.flash('success');
     res.locals.error = req.flash('error');
     next();
-});
-
-app.use((req, res, next) => {
-  console.log(`==> ${req.method} ${req.path} - Body:`, req.body);
-  next();
 });
 
 // Mount routes
