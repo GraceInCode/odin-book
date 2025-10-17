@@ -34,6 +34,6 @@ router.post('/login', // isNotGuest removed here too - login should be open
 
 router.post('/guest', authController.guestLogin);
 
-router.get('/logout', authController.logoutUser);
+router.post('/logout', authController.logoutUser);
 
 module.exports = router;
