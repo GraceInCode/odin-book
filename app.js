@@ -47,13 +47,11 @@ const sessionPool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-console.log('Session secret set:', !!process.env.SESSION_SECRET);
-
 app.use(session({
   store: new pgSession({
     pool: sessionPool,
     tableName: 'session', // Lowercase to match PostgreSQL convention
-    createTableIfMissing: true
+    createTableIfMissing: false // Don't auto-create, we'll handle it manually
   }),
   secret: process.env.SESSION_SECRET,
   resave: false,
