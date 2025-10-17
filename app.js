@@ -47,6 +47,8 @@ const sessionPool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
+console.log('Session secret set:', !!process.env.SESSION_SECRET);
+
 app.use(session({
   store: new pgSession({
     pool: sessionPool,
