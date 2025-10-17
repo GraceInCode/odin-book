@@ -7,6 +7,7 @@ const { isAuthenticated } = require('./src/middleware/auth');
 const pgSession = require('connect-pg-simple')(session);
 
 const app = express();
+app.set('trust proxy', 1); // Trust the first proxy
 const prisma = new PrismaClient(); // Singleton for efficiency
 
 // Middleware
